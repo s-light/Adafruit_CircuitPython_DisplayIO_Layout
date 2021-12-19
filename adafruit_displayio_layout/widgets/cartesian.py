@@ -312,7 +312,10 @@ class Cartesian(Widget):
 
     @property
     def xrange(self):
-        """xrange."""
+        """xrange.
+
+        :attr (int, int) xrange: X axes range
+        """
         return self._xrange
 
     @xrange.setter
@@ -327,7 +330,10 @@ class Cartesian(Widget):
 
     @property
     def yrange(self):
-        """yrange."""
+        """yrange.
+
+        :attr (int, int) yrange: Y axes range
+        """
         return self._yrange
 
     @yrange.setter
@@ -544,15 +550,15 @@ class Cartesian(Widget):
             print("")
             print(
                 "xy:      ({: >4}, {: >4})  "
-                "_xrange: ({: >4}, {: >4})  "
-                "_yrange: ({: >4}, {: >4})  "
+                "xrange: ({: >4}, {: >4})  "
+                "yrange: ({: >4}, {: >4})  "
                 "".format(
                     x,
                     y,
-                    self._xrange[0],
-                    self._xrange[1],
-                    self._yrange[0],
-                    self._yrange[1],
+                    self.xrange[0],
+                    self.xrange[1],
+                    self.yrange[0],
+                    self.yrange[1],
                 )
             )
             print(
@@ -606,8 +612,8 @@ class Cartesian(Widget):
                     "x:{: >4}; xrange({: >4}, {: >4})"
                     "".format(
                         x,
-                        self._xrange[0],
-                        self._xrange[1],
+                        self.xrange[0],
+                        self.xrange[1],
                     )
                 )
             if not self._check_y_in_range(y):
@@ -616,8 +622,8 @@ class Cartesian(Widget):
                     "y:{: >4}; yrange({: >4}, {: >4})"
                     "".format(
                         y,
-                        self._yrange[0],
-                        self._yrange[1],
+                        self.yrange[0],
+                        self.yrange[1],
                     )
                 )
 
@@ -657,3 +663,12 @@ class Cartesian(Widget):
                 self.plot_line_point[-1][1],
                 1,
             )
+
+    def clear_plot(self):
+        """clear_plot function.
+
+        clear plotted lines
+        :return: None
+        rtype: None
+        """
+        self._screen_bitmap.fill(5)
