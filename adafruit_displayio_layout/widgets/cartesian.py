@@ -217,16 +217,6 @@ class Cartesian(Widget):
         self._font_width = self._get_font_height(self._font, 1)[0]
         self._font_height = self._get_font_height(self._font, 1)[1]
 
-        self._xrange = xrange
-        self._normx = (self._xrange[1] - self._xrange[0]) / 100
-        self._valuex = self.width / 100
-        self._factorx = 100 / (self._xrange[1] - self._xrange[0])
-
-        self._yrange = yrange
-        self._normy = (self._yrange[1] - self._yrange[0]) / 100
-        self._valuey = self.height / 100
-        self._factory = 100 / (self._yrange[1] - self._yrange[0])
-
         self._tick_bitmap = displayio.Bitmap(
             self._tick_line_thickness, self._tick_line_height, 3
         )
@@ -306,8 +296,10 @@ class Cartesian(Widget):
         self._nudge_x = nudge_x
         self._nudge_y = nudge_y
 
-        self._draw_axes()
-        self._draw_ticks()
+        self._ticks_bitmaps_x = []
+        self._ticks_bitmaps_y = []
+        self.xrange = xrange
+        self.yrange = yrange
 
         self.append(self._axesx_tilegrid)
         self.append(self._axesy_tilegrid)
@@ -317,6 +309,36 @@ class Cartesian(Widget):
         self._pointer = None
         self._circle_palette = None
         self.plot_line_point = None
+
+    @property
+    def xrange(self):
+        """xrange."""
+        return self._xrange
+
+    @xrange.setter
+    def xrange(self, xrange):
+        self._xrange = xrange
+        self._normx = (self._xrange[1] - self._xrange[0]) / 100
+        self._valuex = self.width / 100
+        self._factorx = 100 / (self._xrange[1] - self._xrange[0])
+        self._draw_axes_x()
+        self._draw_ticks_x()
+        return self._xrange
+
+    @property
+    def yrange(self):
+        """yrange."""
+        return self._yrange
+
+    @yrange.setter
+    def yrange(self, yrange):
+        self._yrange = yrange
+        self._normy = (self._yrange[1] - self._yrange[0]) / 100
+        self._valuey = self.height / 100
+        self._factory = 100 / (self._yrange[1] - self._yrange[0])
+        self._draw_axes_y()
+        self._draw_ticks_y()
+        return self._yrange
 
     @staticmethod
     def _get_font_height(font, scale: int) -> Tuple[int, int]:
@@ -331,7 +353,7 @@ class Cartesian(Widget):
             font_width = 12
         return font_width, font_height
 
-    def _draw_axes(self) -> None:
+    def _draw_axes_x(self) -> None:
         # Draw x axes line
         rectangle_helper(
             0,
@@ -344,6 +366,7 @@ class Cartesian(Widget):
             True,
         )
 
+    def _draw_axes_y(self) -> None:
         # Draw y axes line
         rectangle_helper(
             self._axesy_width - self._axes_line_thickness,
@@ -356,10 +379,14 @@ class Cartesian(Widget):
             True,
         )
 
-    def _draw_ticks(self) -> None:
+    def _draw_ticks_x(self) -> None:
         # ticks definition
         ticks = [10, 30, 50, 70, 90]
         subticks = [20, 40, 60, 80, 100]
+        # cleanup
+        for index, tick in enumerate(self._ticks_bitmaps_x):
+            self.remove(tick)
+            del self._ticks_bitmaps_x[index]
         # X axes ticks
         for i in range(10, 100, 10):
             text_tick = str(round(self._xrange[0]) + round(i * self._normx))
@@ -377,6 +404,7 @@ class Cartesian(Widget):
                     + self._font_height // 2
                     + 1,
                 )
+                self._ticks_bitmaps_x.append(tick_text)
                 self.append(tick_text)
                 rectangle_helper(
                     text_dist,
@@ -404,6 +432,14 @@ class Cartesian(Widget):
                         True,
                     )
 
+    def _draw_ticks_y(self) -> None:
+        # ticks definition
+        ticks = [10, 30, 50, 70, 90]
+        subticks = [20, 40, 60, 80, 100]
+        # cleanup
+        for index, tick in enumerate(self._ticks_bitmaps_y):
+            self.remove(tick)
+            del self._ticks_bitmaps_y[index]
         # Y axes ticks
         for i in range(10, 100, 10):
             text_tick = str(round(self._yrange[0]) + round(i * self._normy))
