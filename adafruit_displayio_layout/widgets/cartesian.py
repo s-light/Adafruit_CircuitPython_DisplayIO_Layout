@@ -296,10 +296,12 @@ class Cartesian(Widget):
         self._nudge_x = nudge_x
         self._nudge_y = nudge_y
 
-        self._ticks_bitmaps_x = []
-        self._ticks_bitmaps_y = []
+        self._ticks_label_x = []
+        self._ticks_label_y = []
         self.xrange = xrange
         self.yrange = yrange
+        self._draw_axes_y()
+        self._draw_axes_x()
 
         self.append(self._axesx_tilegrid)
         self.append(self._axesy_tilegrid)
@@ -324,7 +326,6 @@ class Cartesian(Widget):
         self._normx = (self._xrange[1] - self._xrange[0]) / 100
         self._valuex = self.width / 100
         self._factorx = 100 / (self._xrange[1] - self._xrange[0])
-        self._draw_axes_x()
         self._draw_ticks_x()
         return self._xrange
 
@@ -342,7 +343,6 @@ class Cartesian(Widget):
         self._normy = (self._yrange[1] - self._yrange[0]) / 100
         self._valuey = self.height / 100
         self._factory = 100 / (self._yrange[1] - self._yrange[0])
-        self._draw_axes_y()
         self._draw_ticks_y()
         return self._yrange
 
@@ -360,7 +360,7 @@ class Cartesian(Widget):
         return font_width, font_height
 
     def _draw_axes_x(self) -> None:
-        # Draw x axes line
+        """Draw x axes line."""
         rectangle_helper(
             0,
             0,
@@ -373,7 +373,7 @@ class Cartesian(Widget):
         )
 
     def _draw_axes_y(self) -> None:
-        # Draw y axes line
+        """Draw y axes line."""
         rectangle_helper(
             self._axesy_width - self._axes_line_thickness,
             0,
@@ -390,16 +390,17 @@ class Cartesian(Widget):
         ticks = [10, 30, 50, 70, 90]
         subticks = [20, 40, 60, 80, 100]
         # cleanup
-        for index, tick in enumerate(self._ticks_bitmaps_x):
-            self.remove(tick)
-            del self._ticks_bitmaps_x[index]
+        for tick_label in self._ticks_label_x:
+            self.remove(tick_label)
+        self._ticks_label_x.clear()
+        # print("_draw_ticks_x _ticks_label_x", self._ticks_label_x)
         # X axes ticks
         for i in range(10, 100, 10):
             text_tick = str(round(self._xrange[0]) + round(i * self._normx))
             text_dist = int(self._valuex * i)
             if i in ticks:
                 shift_label_x = len(text_tick) * self._font_width
-                tick_text = bitmap_label.Label(
+                tick_label = bitmap_label.Label(
                     self._font,
                     color=self._font_color,
                     text=text_tick,
@@ -410,8 +411,8 @@ class Cartesian(Widget):
                     + self._font_height // 2
                     + 1,
                 )
-                self._ticks_bitmaps_x.append(tick_text)
-                self.append(tick_text)
+                self.append(tick_label)
+                self._ticks_label_x.append(tick_label)
                 rectangle_helper(
                     text_dist,
                     self._axes_line_thickness,
@@ -437,22 +438,23 @@ class Cartesian(Widget):
                         self._screen_palette,
                         True,
                     )
+        # print("_draw_ticks_x _ticks_label_x", self._ticks_label_x)
 
     def _draw_ticks_y(self) -> None:
         # ticks definition
         ticks = [10, 30, 50, 70, 90]
         subticks = [20, 40, 60, 80, 100]
         # cleanup
-        for index, tick in enumerate(self._ticks_bitmaps_y):
-            self.remove(tick)
-            del self._ticks_bitmaps_y[index]
+        for tick_label in self._ticks_label_y:
+            self.remove(tick_label)
+        self._ticks_label_y.clear()
         # Y axes ticks
         for i in range(10, 100, 10):
             text_tick = str(round(self._yrange[0]) + round(i * self._normy))
             text_dist = int(self._valuey * i)
             if i in ticks:
                 shift_label_x = len(text_tick) * self._font_width
-                tick_text = bitmap_label.Label(
+                tick_label = bitmap_label.Label(
                     self._font,
                     color=self._font_color,
                     text=text_tick,
@@ -462,7 +464,8 @@ class Cartesian(Widget):
                     - 2,
                     y=0 + self.height - text_dist,
                 )
-                self.append(tick_text)
+                self.append(tick_label)
+                self._ticks_label_y.append(tick_label)
                 rectangle_helper(
                     self._axesy_width
                     - self._axes_line_thickness
