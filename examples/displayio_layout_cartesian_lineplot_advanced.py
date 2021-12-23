@@ -57,23 +57,23 @@ print("examples/displayio_layout_cartesian_lineplot.py")
 
 print("draw lines")
 # first point without a wait.
-my_plane.add_line(0, 0)
+my_plane.add_plot_line(0, 0)
 for x, y in data:
-    my_plane.add_line(x, y)
+    my_plane.add_plot_line(x, y)
     time.sleep(0.1)
 
 
 print("clear all lines.")
-my_plane.clear_lines()
+my_plane.clear_plot_lines()
 
 print("change x & y range")
 my_plane.xrange = (15, 65)
 my_plane.yrange = (14, 20)
 
 print("draw lines")
-my_plane.add_line(my_plane.xrange[0], my_plane.yrange[0])
+my_plane.add_plot_line(my_plane.xrange[0], my_plane.yrange[0])
 for x in range(*my_plane.xrange):
-    my_plane.add_line(x, random.randint(*my_plane.yrange))
+    my_plane.add_plot_line(x, random.randint(*my_plane.yrange))
     time.sleep(0.1)
 
 print("done.")
